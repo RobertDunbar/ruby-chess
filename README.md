@@ -18,6 +18,10 @@ class Player
 end
 ```
 
+## Authors
+
+* **Robert Dunbar** - *Initial work*
+
 ### Aknowledgements
 
 Part of The Odin Project curriculum https://www.theodinproject.com/courses/ruby-programming/lessons/ruby-final-project
