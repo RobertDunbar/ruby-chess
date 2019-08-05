@@ -20,7 +20,7 @@ end
 
 ## Authors
 
-* **Robert Dunbar** - *Initial work*
+* **Robert Dunbar** - *All code*
 
 ### Aknowledgements
 

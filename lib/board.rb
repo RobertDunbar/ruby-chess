@@ -1,29 +1,41 @@
+require "./piece.rb"
+require "./pawn.rb"
+require "./rook.rb"
+require "./knight.rb"
+require "./bishop.rb"
+require "./queen.rb"
+require "./king.rb"
+
 class Board
 
-    attr_accessor :cells
+    attr_accessor :cells, :selected_piece, :available_moves
     attr_reader :pieces
 
     def initialize
+        @selected_piece = nil
+        @available_moves = []
         initialize_pieces()
         initialize_grid()
         initialize_black()
         initialize_white()
-        show_board(cells)
+        show_board()
     end
 
     def initialize_pieces
-        @pieces = { white_king: "\u2654",
-                    white_queen: "\u2655",
-                    white_rook: "\u2656",
-                    white_bishop: "\u2657",
-                    white_knight: "\u2658",
-                    white_pawn: "\u2659",
-                    black_king: "\u265A",
-                    black_queen: "\u265B",
-                    black_rook: "\u265C",
-                    black_bishop: "\u265D",
-                    black_knight: "\u265E",
-                    black_pawn: "\u265F" }
+        @pieces = {
+            white_king: King.new(:white),
+            white_queen: Queen.new(:white),
+            white_rook: Rook.new(:white),
+            white_bishop: Bishop.new(:white),
+            white_knight: Knight.new(:white),
+            white_pawn: Pawn.new(:white),
+            black_king: King.new(:black),
+            black_queen: Queen.new(:black),
+            black_rook: Rook.new(:black),
+            black_bishop: Bishop.new(:black),
+            black_knight: Knight.new(:black),
+            black_pawn: Pawn.new(:black)
+        }
     end
 
     def initialize_grid
@@ -57,7 +69,7 @@ class Board
         end
     end
 
-    def show_board(cells)
+    def show_board
         puts `clear`
         9.downto(0) do |row|
             print "\t"
@@ -76,16 +88,44 @@ class Board
                         print "#{row} ".colorize(:color => :black, :background => :cyan)
                     elsif col == 9
                         print " #{row}".colorize(:color => :black, :background => :cyan)
-                    elsif (col + row) % 2 == 0
-                        print "#{@cells[sym]} ".colorize(:color => :black, :background => :blue)
                     else
-                        print "#{@cells[sym]} ".colorize(:color => :black, :background => :white)
+                        obj = @cells[sym]
+                        if obj == " "
+                            ucode = obj
+                        else
+                            colour = obj.colour
+                            ucode = obj.ucode[obj.colour]
+                        end
+                        if (col + row) % 2 == 0
+                            print "#{ucode} ".colorize(:color => :black, :background => :blue)
+                        else
+                            print "#{ucode} ".colorize(:color => :black, :background => :white)
+                        end
                     end
                 end
             end
             puts ""
         end
         puts ""
+    end
+
+    def calculate_moves(cell)
+        piece_type = @pieces.key(@cells[cell.to_sym])
+        @available_moves = @pieces[piece_type].calc_moves(cell, @cells)
+        # case piece_type
+        # when :black_pawn, :white_pawn
+        #     @available_moves = @pieces[piece_type].calc_moves(cell)
+        # when :black_rook, :white_rook
+
+        # when :black_knight, :white_knight
+
+        # when :black_bishop, :white_bishop
+
+        # when :black_queen, :white_queen
+
+        # when :black_king, :white_king
+
+        # end
     end
 
     # def new_moves_array(row, column)

@@ -8,11 +8,13 @@ class Game
 
     def initialize
         new_game = game_io("welcome")
+        @player_white = Player.new(nil, :white)
+        @player_black = Player.new(nil, :black)
         if new_game == "2"
-            @player_white = Player.new(game_io("name", "Player 1 (white pieces) :"), :white)
-            @player_black = Player.new(game_io("name", "Player 2 (black pieces) :"), :black)
-            @board = Board.new()
+            @player_white.name = game_io("name", "Player 1 (white pieces) :")
+            @player_black.name = game_io("name", "Player 2 (black pieces) :")
         end
+        @board = Board.new()
         @current_player = @player_white
     end
 
@@ -30,17 +32,26 @@ class Game
     def player_turn(player)
         move_from = ""
         loop do
-            puts "Please select a #{player.colour.to_s} piece to move :"
+            puts "#{player.name}, please select a #{player.colour.to_s} piece to move :"
             move_from = gets.chomp.downcase
-            p player.colour.to_s
+            if !check_valid_cell?(move_from)
+                puts "Invalid cell entry."
+            elsif get_piece_colour(move_from) != player.colour.to_s
+                puts "Incorrect piece colour selected."
+            end
             break if check_valid_cell?(move_from) && get_piece_colour(move_from) == player.colour.to_s
         end
+        @board.calculate_moves(move_from)
         move_to = ""
         loop do
-            puts "Please select a valid cell to move to. Available options : "
+            puts "Please select a valid cell to move to. Available options, #{@board.available_moves.join(", ")} :"
             move_to = gets.chomp
-            break if check_valid_cell?(move_to)
+            puts "Please select an availble option." if !@board.available_moves.include?(move_to)
+            break if @board.available_moves.include?(move_to)
         end
+        @board.cells[move_to.to_sym] = @board.cells[move_from.to_sym]
+        @board.cells[move_from.to_sym] = " "
+        @board.show_board
         # row = fill_board(player, column.to_i)
         # result = end_of_game?(row, column.to_i)
         # @board.show_board(@board.cells)
@@ -68,9 +79,9 @@ class Game
     #     return @board.check_win_lines(row, column - 1)
     # end
 
-    # def player_switch(player)
-    #     player == @player1 ? @current_player = @player2 : @current_player = @player1
-    # end
+    def player_switch(player)
+        player == @player_white ? @current_player = @player_black : @current_player = @player_white
+    end
 
     def check_valid_cell? (input)
         return /[a-z][1-9]/.match (input)
