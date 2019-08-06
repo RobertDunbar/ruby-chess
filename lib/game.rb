@@ -1,9 +1,12 @@
 require "./player.rb"
 require "./board.rb"
+require "./converter.rb"
 
 require "colorize"
 
 class Game
+    include Converter
+
     attr_reader :player_white, :player_black, :board
 
     def initialize
@@ -38,19 +41,23 @@ class Game
                 puts "Invalid cell entry."
             elsif get_piece_colour(move_from) != player.colour.to_s
                 puts "Incorrect piece colour selected."
+            else
+                move_from = string_to_coord(move_from)
+                @board.calculate_moves(move_from)
+                break if @board.available_moves != []
+                puts "No available moves for this piece. Make another selection."
             end
-            break if check_valid_cell?(move_from) && get_piece_colour(move_from) == player.colour.to_s
         end
-        @board.calculate_moves(move_from)
         move_to = ""
         loop do
-            puts "Please select a valid cell to move to. Available options, #{@board.available_moves.join(", ")} :"
+            puts "Please select a valid cell to move to. Available options -: #{@board.available_moves.join(", ")} :"
             move_to = gets.chomp
             puts "Please select an availble option." if !@board.available_moves.include?(move_to)
             break if @board.available_moves.include?(move_to)
         end
-        @board.cells[move_to.to_sym] = @board.cells[move_from.to_sym]
-        @board.cells[move_from.to_sym] = " "
+        move_to = move_to.to_sym
+        @board.cells[move_to] = @board.cells[move_from]
+        @board.cells[move_from] = " "
         @board.show_board
         # row = fill_board(player, column.to_i)
         # result = end_of_game?(row, column.to_i)
@@ -59,8 +66,8 @@ class Game
     end
 
     def get_piece_colour(cell)
-        return false if @board.cells[cell.to_sym] == " "
-        return @board.pieces.key(@board.cells[cell.to_sym])[0..4]
+        return false if @board.cells[string_to_coord(cell)] == " "
+        return @board.pieces.key(@board.cells[string_to_coord(cell)])[0..4]
     end
 
     # def fill_board(player, column)

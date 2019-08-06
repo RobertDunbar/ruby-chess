@@ -5,14 +5,16 @@ require "./knight.rb"
 require "./bishop.rb"
 require "./queen.rb"
 require "./king.rb"
+require "./converter.rb"
 
 class Board
+    include Converter
 
     attr_accessor :cells, :selected_piece, :available_moves
-    attr_reader :pieces
+    attr_reader :pieces, :selected_cell
 
     def initialize
-        @selected_piece = nil
+        @selected_cell = nil
         @available_moves = []
         initialize_pieces()
         initialize_grid()
@@ -40,32 +42,32 @@ class Board
 
     def initialize_grid
         @cells = Hash.new
-        ("a".."h").each do |letter|
-            (1..8).each do |num|
-                @cells[(letter + num.to_s).to_sym] = " "
+        (0..7).each do |col|
+            (0..7).each do |row|
+                @cells[[col, row]] = " "
             end
         end
     end
 
     def initialize_black
-        @cells[:a8], @cells[:h8] = @pieces[:black_rook], @pieces[:black_rook]
-        @cells[:b8], @cells[:g8] = @pieces[:black_knight], @pieces[:black_knight]
-        @cells[:c8], @cells[:f8] = @pieces[:black_bishop], @pieces[:black_bishop]
-        @cells[:d8] = @pieces[:black_queen]
-        @cells[:e8] = @pieces[:black_king]
-        ("a".."h").each do |col|
-            @cells[(col + "7").to_sym] = @pieces[:black_pawn]
+        @cells[[0,7]], @cells[[7,7]] = @pieces[:black_rook], @pieces[:black_rook]
+        @cells[[1,7]], @cells[[6,7]] = @pieces[:black_knight], @pieces[:black_knight]
+        @cells[[2,7]], @cells[[5,7]] = @pieces[:black_bishop], @pieces[:black_bishop]
+        @cells[[3,7]] = @pieces[:black_queen]
+        @cells[[4,7]] = @pieces[:black_king]
+        (0..7).each do |col|
+            @cells[[col, 6]] = @pieces[:black_pawn]
         end
     end
 
     def initialize_white
-        @cells[:a1], @cells[:h1] = @pieces[:white_rook], @pieces[:white_rook]
-        @cells[:b1], @cells[:g1] = @pieces[:white_knight], @pieces[:white_knight]
-        @cells[:c1], @cells[:f1] = @pieces[:white_bishop], @pieces[:white_bishop]
-        @cells[:d1] = @pieces[:white_queen]
-        @cells[:e1] = @pieces[:white_king]
-        ("a".."h").each do |col|
-            @cells[(col + "2").to_sym] = @pieces[:white_pawn]
+        @cells[[0,0]], @cells[[7,0]] = @pieces[:white_rook], @pieces[:white_rook]
+        @cells[[1,0]], @cells[[6,0]] = @pieces[:white_knight], @pieces[:white_knight]
+        @cells[[2,0]], @cells[[5,0]] = @pieces[:white_bishop], @pieces[:white_bishop]
+        @cells[[3,0]] = @pieces[:white_queen]
+        @cells[[4,0]] = @pieces[:white_king]
+        (0..7).each do |col|
+            @cells[[col, 1]] = @pieces[:white_pawn]
         end
     end
 
@@ -75,7 +77,6 @@ class Board
             print "\t"
             (0..9).each do |col|
                 char = (col + 97 - 1).chr
-                sym = (char + row.to_s).to_sym
                 case row
                 when 0, 9
                     if col != 0 && col != 9
@@ -89,7 +90,7 @@ class Board
                     elsif col == 9
                         print " #{row}".colorize(:color => :black, :background => :cyan)
                     else
-                        obj = @cells[sym]
+                        obj = @cells[[col - 1, row - 1]]
                         if obj == " "
                             ucode = obj
                         else
@@ -110,22 +111,12 @@ class Board
     end
 
     def calculate_moves(cell)
-        piece_type = @pieces.key(@cells[cell.to_sym])
+        @selected_cell = cell
+        piece_type = @pieces.key(@cells[cell])
         @available_moves = @pieces[piece_type].calc_moves(cell, @cells)
-        # case piece_type
-        # when :black_pawn, :white_pawn
-        #     @available_moves = @pieces[piece_type].calc_moves(cell)
-        # when :black_rook, :white_rook
-
-        # when :black_knight, :white_knight
-
-        # when :black_bishop, :white_bishop
-
-        # when :black_queen, :white_queen
-
-        # when :black_king, :white_king
-
-        # end
+        p @available_moves
+        @available_moves = coord_to_string(@available_moves)
+        p @available_moves
     end
 
     # def new_moves_array(row, column)

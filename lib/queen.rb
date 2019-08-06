@@ -1,15 +1,23 @@
 class Queen < Piece
-    attr_reader :ucode, :colour, :moves
+    attr_reader :ucode, :colour
 
     def initialize(colour)
         @colour = colour
         @ucode = {
             white: "\u2655",
             black: "\u265B" }
-        @moves = []
     end
 
-    def calc_moves(cell)
+    def calc_moves(cell, cells)
+        pos = sym_to_coord(cell)
+        col = pos[0]
+        row = pos[1]
+        positions = []
+        case self.colour
+        when :white
 
+        when :black
+
+        end
     end
 end
