@@ -25,7 +25,7 @@ class Game
         result = ""
         loop do
             result = player_turn(@current_player)
-            break if result
+            # break if result
             player_switch(@current_player)
         end
         # puts "Board is full! No winner" if result == "full"
@@ -55,7 +55,10 @@ class Game
             puts "Please select an availble option." if !@board.available_moves.include?(move_to)
             break if @board.available_moves.include?(move_to)
         end
-        move_to = move_to.to_sym
+        move_to = string_to_coord(move_to)
+        if @board.cells[move_to] != " "
+            @board.take_piece(@board.cells[move_to]) if @board.cells[move_to].colour != @current_player.colour
+        end
         @board.cells[move_to] = @board.cells[move_from]
         @board.cells[move_from] = " "
         @board.show_board

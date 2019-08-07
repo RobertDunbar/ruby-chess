@@ -12,7 +12,7 @@ class King < Piece
             black: "\u265A" }
     end
 
-    def calc_moves(cell, cells, positions=[])
+    def calc_moves(cell:, cells:, start_cell:, positions: [])
         self.colour == :white ? opposing_colour = :black : opposing_colour = :white
         move_cell = coord_move(cell, 1, 0)
         if !cells[move_cell].nil?

@@ -14,8 +14,9 @@ class Board
     attr_reader :pieces, :selected_cell
 
     def initialize
-        @selected_cell = nil
         @available_moves = []
+        @taken_white = []
+        @taken_black = []
         initialize_pieces()
         initialize_grid()
         initialize_black()
@@ -108,47 +109,18 @@ class Board
             puts ""
         end
         puts ""
+        puts "Taken white pieces : #{(@taken_white.map { |piece| piece.ucode[:white] }).join(", ") }"
+        puts "Taken black pieces : #{(@taken_black.map { |piece| piece.ucode[:black] }).join(", ") }"
     end
 
     def calculate_moves(cell)
-        @selected_cell = cell
         piece_type = @pieces.key(@cells[cell])
-        @available_moves = @pieces[piece_type].calc_moves(cell, @cells)
-        p @available_moves
+        @available_moves = @pieces[piece_type].calc_moves(cell: cell, cells: @cells, start_cell: cell)
         @available_moves = coord_to_string(@available_moves)
-        p @available_moves
     end
 
-    # def new_moves_array(row, column)
-    #     new_moves = []
-    #     vertical_moves = []
-    #     horizonal_moves = []
-    #     incline_moves = []
-    #     decline_moves = []
-    #     for i in 1..7
-    #         vertical_moves << [row - (i - 4), column]
-    #         horizonal_moves << [row, column + (i - 4)]
-    #         incline_moves << [row - (i - 4),  column + (i - 4)]
-    #         decline_moves << [row + (i - 4),  column + (i - 4)]
-    #     end
-    #     new_moves << vertical_moves << horizonal_moves << incline_moves << decline_moves
-    #     new_moves.each do |line|
-    #         line.filter! { |pos| pos[0] <= 5 && pos[0] >= 0 && pos[1] <= 6 && pos[1] >= 0 }
-    #     end
-    #     new_moves
-    # end
-
-    # def check_win_lines(row, column)
-    #     new_moves = new_moves_array(row, column)
-    #     marker = cells[row][column]
-    #     result = false
-    #     new_moves.each do |line|
-    #         line.map! { |pos| cells[pos[0]][pos[1]] }
-    #     end
-    #     new_moves.each do |line|
-    #         line_summary = line.chunk { |pos| pos }.map { |char, num| [char, num.length]}
-    #         result = "winner" if line_summary.include?([marker, 4])
-    #     end
-    #     result
-    # end
+    def take_piece(piece)
+        @taken_white << piece if piece.colour == :white
+        @taken_black << piece if piece.colour == :black
+    end
 end
