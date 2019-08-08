@@ -19,6 +19,7 @@ class Game
         end
         @board = Board.new()
         @current_player = @player_white
+        @available_moves = []
     end
 
     def play
@@ -32,20 +33,19 @@ class Game
     end
 
     def player_turn(player)
-        move_from = move_from_cell()
+        move_from = move_from_cell(player)
         move_to = move_to_cell()
         @board.track_king(move_from, move_to) if @board.get_piece(move_from)[-4..-1] == "king"
-        @board.take_piece(@board.cells[move_to], @current_player, move_to) if @board.cells[move_to] != " "
-        @board.track_active_pieces(current_player, move_from, move_to)
+        @board.take_piece(@board.cells[move_to], player, move_to) if @board.cells[move_to] != " "
+        @board.track_active_pieces(player, move_from, move_to)
         @board.move_pieces(move_from, move_to)
         @board.show_board
         result = @board.check_and_mate(move_to)
-        puts "#{@current_player.colour} has achieved Check!" if result == "check"
+        puts "#{player.colour} has achieved Check!" if result == "check"
     end
 
-    def move_from_cell
+    def move_from_cell(player)
         move_from = ""
-        available_moves = []
         loop do
             puts "#{player.name}, please select a #{player.colour.to_s} piece to move :"
             move_from = gets.chomp.downcase
@@ -55,9 +55,9 @@ class Game
                 puts "Incorrect piece colour selected."
             else
                 move_from = string_to_coord(move_from)
-                available_moves = @board.calculate_moves(move_from)
-                available_moves = coord_to_string(available_moves)
-                break if available_moves != []
+                @available_moves = @board.calculate_moves(move_from)
+                @available_moves = coord_to_string(@available_moves)
+                break if @available_moves != []
                 puts "No available moves for this piece. Make another selection."
             end
         end
@@ -65,11 +65,12 @@ class Game
     end
 
     def move_to_cell
+        move_to = ""
         loop do
-            puts "Please select a valid cell to move to. Available options -: #{available_moves.join(", ")} :"
+            puts "Please select a valid cell to move to. Available options -: #{@available_moves.join(", ")} :"
             move_to = gets.chomp
-            puts "Please select an availble option." if !available_moves.include?(move_to)
-            break if available_moves.include?(move_to)
+            puts "Please select an availble option." if !@available_moves.include?(move_to)
+            break if @available_moves.include?(move_to)
         end
         move_to = string_to_coord(move_to)
     end
