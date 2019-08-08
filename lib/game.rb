@@ -25,15 +25,27 @@ class Game
         result = ""
         loop do
             result = player_turn(@current_player)
-            # break if result
+            break if result == "mate"
             player_switch(@current_player)
         end
-        # puts "Board is full! No winner" if result == "full"
-        # puts "#{@current_player.name} is the winner!" if result == "winner"
+        puts "#{@current_player.colour} has achieved CHECK MATE!"
     end
 
     def player_turn(player)
+        move_from = move_from_cell()
+        move_to = move_to_cell()
+        @board.track_king(move_from, move_to) if @board.get_piece(move_from)[-4..-1] == "king"
+        @board.take_piece(@board.cells[move_to], @current_player, move_to) if @board.cells[move_to] != " "
+        @board.track_active_pieces(current_player, move_from, move_to)
+        @board.move_pieces(move_from, move_to)
+        @board.show_board
+        result = @board.check_and_mate(move_to)
+        puts "#{@current_player.colour} has achieved Check!" if result == "check"
+    end
+
+    def move_from_cell
         move_from = ""
+        available_moves = []
         loop do
             puts "#{player.name}, please select a #{player.colour.to_s} piece to move :"
             move_from = gets.chomp.downcase
@@ -43,51 +55,29 @@ class Game
                 puts "Incorrect piece colour selected."
             else
                 move_from = string_to_coord(move_from)
-                @board.calculate_moves(move_from)
-                break if @board.available_moves != []
+                available_moves = @board.calculate_moves(move_from)
+                available_moves = coord_to_string(available_moves)
+                break if available_moves != []
                 puts "No available moves for this piece. Make another selection."
             end
         end
-        move_to = ""
+        move_from
+    end
+
+    def move_to_cell
         loop do
-            puts "Please select a valid cell to move to. Available options -: #{@board.available_moves.join(", ")} :"
+            puts "Please select a valid cell to move to. Available options -: #{available_moves.join(", ")} :"
             move_to = gets.chomp
-            puts "Please select an availble option." if !@board.available_moves.include?(move_to)
-            break if @board.available_moves.include?(move_to)
+            puts "Please select an availble option." if !available_moves.include?(move_to)
+            break if available_moves.include?(move_to)
         end
         move_to = string_to_coord(move_to)
-        if @board.cells[move_to] != " "
-            @board.take_piece(@board.cells[move_to]) if @board.cells[move_to].colour != @current_player.colour
-        end
-        @board.cells[move_to] = @board.cells[move_from]
-        @board.cells[move_from] = " "
-        @board.show_board
-        # row = fill_board(player, column.to_i)
-        # result = end_of_game?(row, column.to_i)
-        # @board.show_board(@board.cells)
-        # result
     end
 
     def get_piece_colour(cell)
         return false if @board.cells[string_to_coord(cell)] == " "
         return @board.pieces.key(@board.cells[string_to_coord(cell)])[0..4]
     end
-
-    # def fill_board(player, column)
-    #     for row in 5.downto(0)
-    #         if @board.cells[row][column - 1] == 0
-    #             @board.cells[row][column - 1] = "X" if player.colour == :blue
-    #             @board.cells[row][column - 1] = "Y" if player.colour == :red
-    #             @board.columns_full << column if row == 0
-    #             return row
-    #         end
-    #     end
-    # end
-
-    # def end_of_game?(row, column)
-    #     return "full" if ([1,2,3,4,5,6,7] - @board.columns_full).empty?
-    #     return @board.check_win_lines(row, column - 1)
-    # end
 
     def player_switch(player)
         player == @player_white ? @current_player = @player_black : @current_player = @player_white
@@ -118,7 +108,6 @@ class Game
         end
     end
 end
-
 
 game = Game.new()
 game.play

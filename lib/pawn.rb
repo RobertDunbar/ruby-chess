@@ -1,6 +1,6 @@
 require "./converter.rb"
 
-class Pawn < Piece
+class Pawn
     include Converter
 
     attr_reader :ucode, :colour

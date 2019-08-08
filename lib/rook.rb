@@ -1,6 +1,6 @@
 require "./converter.rb"
 
-class Rook < Piece
+class Rook
     include Converter
 
     attr_reader :ucode, :colour

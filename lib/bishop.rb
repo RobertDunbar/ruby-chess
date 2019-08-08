@@ -1,6 +1,6 @@
 require "./converter.rb"
 
-class Bishop < Piece
+class Bishop
     include Converter
 
     attr_reader :ucode, :colour

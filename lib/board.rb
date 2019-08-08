@@ -1,4 +1,3 @@
-require "./piece.rb"
 require "./pawn.rb"
 require "./rook.rb"
 require "./knight.rb"
@@ -10,13 +9,16 @@ require "./converter.rb"
 class Board
     include Converter
 
-    attr_accessor :cells, :selected_piece, :available_moves
-    attr_reader :pieces, :selected_cell
+    attr_accessor :cells, :active_pieces, :white_king, :black_king
+    attr_reader :pieces
 
     def initialize
-        @available_moves = []
         @taken_white = []
         @taken_black = []
+        @active_pieces = { black: [],
+                          white: []}
+        @white_king = []
+        @black_king = []
         initialize_pieces()
         initialize_grid()
         initialize_black()
@@ -56,9 +58,12 @@ class Board
         @cells[[2,7]], @cells[[5,7]] = @pieces[:black_bishop], @pieces[:black_bishop]
         @cells[[3,7]] = @pieces[:black_queen]
         @cells[[4,7]] = @pieces[:black_king]
+        @active_pieces[:black] = [[0,7], [7,7], [1,7], [6,7], [2,7], [5,7], [3,7], [4,7]]
         (0..7).each do |col|
             @cells[[col, 6]] = @pieces[:black_pawn]
+            @active_pieces[:black] << [col, 6]
         end
+        @black_king = [4,7]
     end
 
     def initialize_white
@@ -67,13 +72,16 @@ class Board
         @cells[[2,0]], @cells[[5,0]] = @pieces[:white_bishop], @pieces[:white_bishop]
         @cells[[3,0]] = @pieces[:white_queen]
         @cells[[4,0]] = @pieces[:white_king]
+        @active_pieces[:white] = [[0,0], [7,0], [1,0], [6,0], [2,0], [5,0], [3,0], [4,0]]
         (0..7).each do |col|
             @cells[[col, 1]] = @pieces[:white_pawn]
+            @active_pieces[:white] << [col, 1]
         end
+        @white_king = [4,0]
     end
 
     def show_board
-        puts `clear`
+        # puts `clear`
         9.downto(0) do |row|
             print "\t"
             (0..9).each do |col|
@@ -114,13 +122,52 @@ class Board
     end
 
     def calculate_moves(cell)
-        piece_type = @pieces.key(@cells[cell])
-        @available_moves = @pieces[piece_type].calc_moves(cell: cell, cells: @cells, start_cell: cell)
-        @available_moves = coord_to_string(@available_moves)
+        return @pieces[get_piece(cell)].calc_moves(cell: cell, cells: @cells, start_cell: cell)
     end
 
-    def take_piece(piece)
+    def get_piece(cell)
+        return @pieces.key(@cells[cell])
+    end
+
+    def take_piece(piece, current_player, move_to)
         @taken_white << piece if piece.colour == :white
         @taken_black << piece if piece.colour == :black
+        @active_pieces[:black].delete(move_to) if current_player.colour == :white
+        @active_pieces[:white].delete(move_to) if current_player.colour == :black
+    end
+
+    def track_king(move_from, move_to)
+        @white_king = move_to if get_piece(move_from) == :white_king
+        @black_king = move_to if get_piece(move_from) == :black_king
+    end
+
+    def track_active_pieces(current_player, move_from, move_to)
+        if current_player.colour == :white
+            @active_pieces[:white].delete(move_from)
+            @active_pieces[:white].push(move_to)
+        else
+            @active_pieces[:black].delete(move_from)
+            @active_pieces[:black].push(move_to)
+        end
+    end
+
+    def move_pieces(move_from, move_to)
+        @cells[move_to] = @cells[move_from]
+        @cells[move_from] = " "
+    end
+
+    def check_and_mate(cell)
+        @cells[cell].colour == :white ? check_king = @black_king : check_king = @white_king
+        piece_moves = []
+        king_moves = []
+        @active_pieces[@cells[cell].colour].each do |piece|
+            piece_moves += calculate_moves(piece)
+        end
+        king_moves = calculate_moves(check_king)
+        check = piece_moves.include?(check_king)
+        mate = check && (king_moves - piece_moves) == []
+        return "mate" if mate
+        return "check" if check
+        false
     end
 end

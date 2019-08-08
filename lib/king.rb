@@ -1,6 +1,6 @@
 require "./converter.rb"
 
-class King < Piece
+class King
     include Converter
 
     attr_reader :ucode, :colour
