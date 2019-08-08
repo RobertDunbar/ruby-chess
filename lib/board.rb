@@ -151,7 +151,7 @@ class Board
         end
     end
 
-    def move_pieces(move_from, move_to)
+    def move_piece(move_from, move_to)
         @cells[move_to] = @cells[move_from]
         @cells[move_from] = " "
     end

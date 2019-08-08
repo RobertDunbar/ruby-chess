@@ -18,6 +18,13 @@ class Player
 end
 ```
 
+## ToDo
+
+* Castling
+* En Passant
+* Restore taken pieces when pawn reaches end of board
+
+
 ## Authors
 
 * **Robert Dunbar** - *All code*

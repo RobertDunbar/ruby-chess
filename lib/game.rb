@@ -38,7 +38,7 @@ class Game
         @board.track_king(move_from, move_to) if @board.get_piece(move_from)[-4..-1] == "king"
         @board.take_piece(@board.cells[move_to], player, move_to) if @board.cells[move_to] != " "
         @board.track_active_pieces(player, move_from, move_to)
-        @board.move_pieces(move_from, move_to)
+        @board.move_piece(move_from, move_to)
         @board.show_board
         result = @board.check_and_mate(move_to)
         puts "#{player.colour} has achieved Check!" if result == "check"
