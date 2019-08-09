@@ -11,6 +11,7 @@ class Game
 
     def initialize
         new_game = game_io("welcome")
+        ai_game = game_io("computer")
         @player_white = Player.new(nil, :white)
         @player_black = Player.new(nil, :black)
         if new_game == "2"
@@ -48,8 +49,10 @@ class Game
     def move_from_cell(player)
         move_from = ""
         loop do
-            puts "#{player.name}, please select a #{player.colour.to_s} piece to move :"
+            puts "#{player.name}, please select a #{player.colour.to_s} piece to move (enter s to save game, r to retire):"
             move_from = gets.chomp.downcase
+            save_game() if move_from == "s"
+            retire_game(player) if move_from == "r"
             if !check_valid_cell?(move_from)
                 puts "Invalid cell entry."
             elsif get_piece_colour(move_from) != player.colour.to_s
@@ -76,6 +79,16 @@ class Game
         move_to = string_to_coord(move_to)
     end
 
+    def save_game
+
+    end
+
+    def retire_game(player)
+        player == @player_white ? winner = @player_black : winner = @player_white
+        puts "#{player.name} (#{player.colour} pieces) has retired. #{winner.name} (#{winner.colour} pieces) is the winner!"
+        exit
+    end
+
     def get_piece_colour(cell)
         return false if @board.cells[string_to_coord(cell)] == " "
         return @board.pieces.key(@board.cells[string_to_coord(cell)])[0..4]
@@ -93,12 +106,18 @@ class Game
         messages = {
             "welcome" => "Welcome to command line chess!\n\n"\
                          "Please enter 1 to load an existing game or 2 to play a new game :",
-            "name" => "Please enter the name of",
-            "from" => "Please select a cell"
+            "computer" => "Enter 1 for a single player game (vs computer) or 2 for two player game :",
+            "name" => "Please enter the name of"
         }
         puts `clear` if message == "welcome"
         case message
         when "welcome"
+            puts messages[message]
+            loop do
+                input = gets.chomp
+                return input if input == "1" || input == "2"
+            end
+        when "computer"
             puts messages[message]
             loop do
                 input = gets.chomp

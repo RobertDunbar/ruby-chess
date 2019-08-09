@@ -81,7 +81,7 @@ class Board
     end
 
     def show_board
-        # puts `clear`
+        puts `clear`
         9.downto(0) do |row|
             print "\t"
             (0..9).each do |col|

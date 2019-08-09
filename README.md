@@ -21,7 +21,7 @@ end
 ## ToDo
 
 * Castling
-* En Passant
+* En-passant
 * Restore taken pieces when pawn reaches end of board
 
 
