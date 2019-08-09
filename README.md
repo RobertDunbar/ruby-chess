@@ -2,10 +2,14 @@
 
 For the rules of chess please check out [The Rules of Chess](https://www.chessvariants.com/d.chess/chess.html)
 
+## To run
+* Clone repo to local machine
+* run Ruby chess.rb
+
 ## Built With
 
 * [**Ruby 2.6.3**](https://www.ruby-lang.org/en/)
-* **Colorize Gem 0.8.1**(https://rubygems.org/gems/colorize/versions/0.8.1)
+* [**Colorize Gem 0.8.1**](https://rubygems.org/gems/colorize/versions/0.8.1)
 
 ## ToDo
 
