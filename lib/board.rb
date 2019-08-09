@@ -1,10 +1,10 @@
-require "./pawn.rb"
-require "./rook.rb"
-require "./knight.rb"
-require "./bishop.rb"
-require "./queen.rb"
-require "./king.rb"
-require "./converter.rb"
+require_relative "pawn"
+require_relative "rook"
+require_relative "knight"
+require_relative "bishop"
+require_relative "queen"
+require_relative "king"
+require_relative "converter"
 
 class Board
     include Converter

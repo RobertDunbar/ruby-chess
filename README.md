@@ -2,28 +2,16 @@
 
 For the rules of chess please check out [The Rules of Chess](https://www.chessvariants.com/d.chess/chess.html)
 
-## Code Example
+## Built With
 
-Please see a code example here
-
-```
-class Player
-
-    attr_reader :name, :colour
-
-    def initialize(name, colour)
-        @name = name
-        @colour = colour
-    end
-end
-```
+* **[Ruby 2.6.3]**(https://www.ruby-lang.org/en/)
+* **[Colorize Gem 0.8.1]**(https://rubygems.org/gems/colorize/versions/0.8.1)
 
 ## ToDo
 
-* Castling
-* En-passant
+* Implement castling
+* Implement en-passant
 * Restore taken pieces when pawn reaches end of board
-
 
 ## Authors
 

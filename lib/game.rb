@@ -1,6 +1,6 @@
-require "./player.rb"
-require "./board.rb"
-require "./converter.rb"
+require_relative "player"
+require_relative "board"
+require_relative "converter"
 
 require "colorize"
 
@@ -129,6 +129,3 @@ class Game
         end
     end
 end
-
-game = Game.new()
-game.play

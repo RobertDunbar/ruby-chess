@@ -1,4 +1,4 @@
-require "./converter.rb"
+require_relative "converter"
 
 class Pawn
     include Converter
