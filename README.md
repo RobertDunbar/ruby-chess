@@ -4,8 +4,8 @@ For the rules of chess please check out [The Rules of Chess](https://www.chessva
 
 ## Built With
 
-* **[Ruby 2.6.3]**(https://www.ruby-lang.org/en/)
-* **[Colorize Gem 0.8.1]**(https://rubygems.org/gems/colorize/versions/0.8.1)
+* [**Ruby 2.6.3**](https://www.ruby-lang.org/en/)
+* **Colorize Gem 0.8.1**(https://rubygems.org/gems/colorize/versions/0.8.1)
 
 ## ToDo
 
