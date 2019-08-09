@@ -156,16 +156,50 @@ class Board
         @cells[move_from] = " "
     end
 
-    def check_and_mate(cell)
-        @cells[cell].colour == :white ? check_king = @black_king : check_king = @white_king
+    def collect_attacking_piece_moves(colour)
         piece_moves = []
-        king_moves = []
-        @active_pieces[@cells[cell].colour].each do |piece|
+        @active_pieces[colour].each do |piece|
             piece_moves += calculate_moves(piece)
         end
-        king_moves = calculate_moves(check_king)
-        check = piece_moves.include?(check_king)
-        mate = check && (king_moves - piece_moves) == []
+        piece_moves
+    end
+
+    def aggregate_attacking_colour_moves(colour)
+        piece_moves = []
+        @active_pieces[colour].each do |piece|
+            piece_moves += calculate_moves(piece)
+        end
+        piece_moves
+    end
+
+    def check_and_mate(cell)
+        if @cells[cell].colour == :white
+            piece_colour = :white
+            king_colour = :black
+            check_king = @black_king
+        else
+            piece_colour = :black
+            king_colour = :white
+            check_king = @white_king
+        end
+        attacking_moves = aggregate_attacking_colour_moves(piece_colour)
+        check = attacking_moves.uniq.include?(check_king)
+        if check
+            mate = true
+            @active_pieces[king_colour].each do |piece|
+                defensive_moves = calculate_moves(piece)
+                temp_from = @cells[piece]
+                defensive_moves.each do |move|
+                    temp_to = @cells[move]
+                    check_king = move if @cells[piece].class == King
+                    move_piece(piece, move)
+                    piece_moves = collect_attacking_piece_moves(piece_colour)
+                    mate = mate && piece_moves.uniq.include?(check_king)
+                    check_king = piece if @cells[move].class == King
+                    @cells[piece], @cells[move] = temp_from, temp_to
+                end
+            end
+        end
         return "mate" if mate
         return "check" if check
         false

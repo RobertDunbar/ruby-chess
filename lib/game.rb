@@ -42,6 +42,7 @@ class Game
         @board.show_board
         result = @board.check_and_mate(move_to)
         puts "#{player.colour} has achieved Check!" if result == "check"
+        result
     end
 
     def move_from_cell(player)
