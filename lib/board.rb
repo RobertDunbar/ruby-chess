@@ -156,7 +156,7 @@ class Board
         @cells[move_from] = " "
     end
 
-    def collect_attacking_piece_moves(colour)
+    def aggregate_attacking_colour_moves(colour)
         piece_moves = []
         @active_pieces[colour].each do |piece|
             piece_moves += calculate_moves(piece)
@@ -164,10 +164,11 @@ class Board
         piece_moves
     end
 
-    def aggregate_attacking_colour_moves(colour)
+    def calculate_computer_moves
         piece_moves = []
-        @active_pieces[colour].each do |piece|
-            piece_moves += calculate_moves(piece)
+        @active_pieces[:black].each do |piece|
+            the_moves = calculate_moves(piece)
+            piece_moves << [piece, the_moves] if the_moves != []
         end
         piece_moves
     end
@@ -193,7 +194,7 @@ class Board
                     temp_to = @cells[move]
                     check_king = move if @cells[piece].class == King
                     move_piece(piece, move)
-                    piece_moves = collect_attacking_piece_moves(piece_colour)
+                    piece_moves = aggregate_attacking_colour_moves(piece_colour)
                     mate = mate && piece_moves.uniq.include?(check_king)
                     check_king = piece if @cells[move].class == King
                     @cells[piece], @cells[move] = temp_from, temp_to

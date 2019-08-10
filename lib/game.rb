@@ -15,18 +15,26 @@ class Game
         @player_white = Player.new(nil, :white)
         @player_black = Player.new(nil, :black)
         if new_game == "2"
-            @player_white.name = game_io("name", "Player 1 (white pieces) :")
-            @player_black.name = game_io("name", "Player 2 (black pieces) :")
+            if ai_game == "2"
+                @player_white.name = game_io("name", "Player 1 (white pieces) :")
+                @player_black.name = game_io("name", "Player 2 (black pieces) :")
+            else
+                @player_white.name = game_io("name", "Player 1 (white pieces) :")
+                @player_black.name = "Computer"
+                @player_black.computer = true
+            end
         end
         @board = Board.new()
         @current_player = @player_white
         @available_moves = []
+        if new_game == "1" load_game()
     end
 
     def play
         result = ""
         loop do
-            result = player_turn(@current_player)
+            result = player_turn(@current_player) if !@current_player.computer
+            result = computer_turn(@current_player) if @current_player.computer
             break if result == "mate"
             player_switch(@current_player)
         end
@@ -36,6 +44,18 @@ class Game
     def player_turn(player)
         move_from = move_from_cell(player)
         move_to = move_to_cell()
+        result = execute_move(move_from, move_to, player)
+    end
+
+    def computer_turn(player)
+        potential_piece_moves = @board.calculate_computer_moves()
+        ai_move = potential_piece_moves.sample
+        move_from = ai_move[0]
+        move_to = ai_move[1].sample
+        result = execute_move(move_from, move_to, player)
+    end
+
+    def execute_move(move_from, move_to, player)
         @board.track_king(move_from, move_to) if @board.get_piece(move_from)[-4..-1] == "king"
         @board.take_piece(@board.cells[move_to], player, move_to) if @board.cells[move_to] != " "
         @board.track_active_pieces(player, move_from, move_to)
@@ -80,6 +100,10 @@ class Game
     end
 
     def save_game
+
+    end
+
+    def load_game
 
     end
 

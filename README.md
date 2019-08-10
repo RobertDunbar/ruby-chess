@@ -1,10 +1,12 @@
 # Command line chess game
 
 For the rules of chess please check out [The Rules of Chess](https://www.chessvariants.com/d.chess/chess.html)
+Command line chess game, with single player functionality (playing against AI computer that simply randomly selects a valid move).
+Full game save and load functionality. Game status saved in JSON format.
 
 ## To run
 * Clone repo to local machine
-* run Ruby chess.rb
+* Type Ruby chess.rb to execute
 
 ## Built With
 
