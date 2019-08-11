@@ -3,17 +3,19 @@ require_relative "board"
 require_relative "converter"
 
 require "colorize"
+require "yaml"
 
 class Game
     include Converter
 
-    attr_reader :player_white, :player_black, :board
+    attr_reader :player_white, :player_black, :board, :current_player, :available_moves
 
     def initialize
         new_game = game_io("welcome")
-        ai_game = game_io("computer")
+        ai_game = game_io("computer") if new_game == "new"
         @player_white = Player.new(nil, :white)
         @player_black = Player.new(nil, :black)
+        p new_game
         if new_game == "new"
             if ai_game == "2"
                 @player_white.name = game_io("name", "Player 1 (white pieces) :")
@@ -138,11 +140,25 @@ class Game
     end
 
     def save_game
-
+        save = YAML.dump(self)
+        File.open("save.yml", "w+") { |file| file.write(save) }
+        puts "Game saved. Thank for you playing."
+        exit
     end
 
     def load_game
-
+        begin
+            save = YAML.load(File.read("save.yml"))
+            @player_white = save.player_white
+            @player_black = save.player_black
+            @board = save.board
+            @current_player = save.current_player
+            @available_moves = save.available_moves
+            @board.show_board
+        rescue
+            puts "No game saved."
+            exit
+        end
     end
 
     def retire_game(player)
