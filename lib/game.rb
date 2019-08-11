@@ -14,7 +14,7 @@ class Game
         ai_game = game_io("computer")
         @player_white = Player.new(nil, :white)
         @player_black = Player.new(nil, :black)
-        if new_game == "2"
+        if new_game == "new"
             if ai_game == "2"
                 @player_white.name = game_io("name", "Player 1 (white pieces) :")
                 @player_black.name = game_io("name", "Player 2 (black pieces) :")
@@ -27,43 +27,81 @@ class Game
         @board = Board.new()
         @current_player = @player_white
         @available_moves = []
-        if new_game == "1" load_game()
+        load_game() if new_game == "load"
     end
 
     def play
         result = ""
         loop do
-            result = player_turn(@current_player) if !@current_player.computer
-            result = computer_turn(@current_player) if @current_player.computer
-            break if result == "mate"
+            result = player_turn(@current_player, result) if !@current_player.computer
+            break if result == "mate" || result == "stale"
+            result = computer_turn(@current_player, result) if @current_player.computer
+            break if result == "mate" || result == "stale"
             player_switch(@current_player)
         end
-        puts "#{@current_player.colour} has achieved CHECK MATE!"
+        puts "#{@current_player.colour} has achieved CHECK MATE!" if result == "mate"
+        puts "We have a STALEMATE situation. The game is a draw!" if result == "stale"
     end
 
-    def player_turn(player)
-        move_from = move_from_cell(player)
-        move_to = move_to_cell()
-        result = execute_move(move_from, move_to, player)
+    def player_turn(player, check_status)
+        result = false
+        loop do
+            move_from = move_from_cell(player)
+            move_to = move_to_cell()
+            result = execute_move(move_from, move_to, player, check_status)
+            break if result != "repeat"
+        end
+        result
     end
 
-    def computer_turn(player)
+    def computer_turn(player, check_status)
+        result = false
         potential_piece_moves = @board.calculate_computer_moves()
-        ai_move = potential_piece_moves.sample
-        move_from = ai_move[0]
-        move_to = ai_move[1].sample
-        result = execute_move(move_from, move_to, player)
+        loop do
+            ai_move = potential_piece_moves.sample
+            move_from = ai_move[0]
+            move_to = ai_move[1].sample
+            puts "Computer is generating move..."
+            sleep(1)
+            result = execute_move(move_from, move_to, player, check_status)
+            break if result != "repeat"
+        end
+        result
     end
 
-    def execute_move(move_from, move_to, player)
+    def execute_move(move_from, move_to, player, check_status)
+        player.colour == :white ? moving_colour = :white : moving_colour = :black
+        moving_colour == :white ? opposing_colour = :black : opposing_colour = :white
         @board.track_king(move_from, move_to) if @board.get_piece(move_from)[-4..-1] == "king"
-        @board.take_piece(@board.cells[move_to], player, move_to) if @board.cells[move_to] != " "
+        temp_store = @board.cells[move_to]
+        taken = @board.take_piece(@board.cells[move_to], player, move_to) if @board.cells[move_to] != " "
         @board.track_active_pieces(player, move_from, move_to)
         @board.move_piece(move_from, move_to)
+        result = @board.check_and_mate(moving_colour, opposing_colour)
+        if result == "mate"
+            @board.show_board
+            return result
+        end
+        stale = @board.stalemate(moving_colour, opposing_colour)
+        if stale && result != "check"
+            return "stale"
+        end
+        check_self = @board.check_check(opposing_colour, moving_colour)
+        if check_self
+            puts "Invalid move. Your move leaves you in Check. Try again."
+            reverse_move(temp_store, move_from, move_to, player, taken)
+            return "repeat"
+        end
         @board.show_board
-        result = @board.check_and_mate(move_to)
         puts "#{player.colour} has achieved Check!" if result == "check"
         result
+    end
+
+    def reverse_move(piece, move_from, move_to, player, taken)
+        @board.track_king(move_to, move_from) if @board.get_piece(move_to)[-4..-1] == "king"
+        @board.untake_piece(piece, player, move_from) if taken
+        @board.track_active_pieces(player, move_to, move_from)
+        @board.move_piece(move_to, move_from)
     end
 
     def move_from_cell(player)
@@ -129,7 +167,7 @@ class Game
     def game_io(message, add_text="")
         messages = {
             "welcome" => "Welcome to command line chess!\n\n"\
-                         "Please enter 1 to load an existing game or 2 to play a new game :",
+                         "Please enter 'load' to load an existing game or 'new' to play a new game :",
             "computer" => "Enter 1 for a single player game (vs computer) or 2 for two player game :",
             "name" => "Please enter the name of"
         }
@@ -138,8 +176,8 @@ class Game
         when "welcome"
             puts messages[message]
             loop do
-                input = gets.chomp
-                return input if input == "1" || input == "2"
+                input = gets.chomp.downcase
+                return input if input == "load" || input == "new"
             end
         when "computer"
             puts messages[message]

@@ -9,7 +9,7 @@ require_relative "converter"
 class Board
     include Converter
 
-    attr_accessor :cells, :active_pieces, :white_king, :black_king
+    attr_accessor :cells, :active_pieces, :white_king, :black_king, :king
     attr_reader :pieces
 
     def initialize
@@ -17,8 +17,8 @@ class Board
         @taken_black = []
         @active_pieces = { black: [],
                           white: []}
-        @white_king = []
-        @black_king = []
+        @king = { black: [],
+                  white: []}
         initialize_pieces()
         initialize_grid()
         initialize_black()
@@ -63,7 +63,7 @@ class Board
             @cells[[col, 6]] = @pieces[:black_pawn]
             @active_pieces[:black] << [col, 6]
         end
-        @black_king = [4,7]
+        @king[:black] = [4,7]
     end
 
     def initialize_white
@@ -77,11 +77,11 @@ class Board
             @cells[[col, 1]] = @pieces[:white_pawn]
             @active_pieces[:white] << [col, 1]
         end
-        @white_king = [4,0]
+        @king[:white] = [4,0]
     end
 
     def show_board
-        puts `clear`
+        # puts `clear`
         9.downto(0) do |row|
             print "\t"
             (0..9).each do |col|
@@ -134,11 +134,19 @@ class Board
         @taken_black << piece if piece.colour == :black
         @active_pieces[:black].delete(move_to) if current_player.colour == :white
         @active_pieces[:white].delete(move_to) if current_player.colour == :black
+        true
+    end
+
+    def untake_piece(piece, current_player, move_from)
+        @taken_white.delete(piece) if piece.colour == :white
+        @taken_black.delete(piece) if piece.colour == :black
+        @active_pieces[:black].push(move_from) if current_player.colour == :white
+        @active_pieces[:white].push(move_from) if current_player.colour == :black
     end
 
     def track_king(move_from, move_to)
-        @white_king = move_to if get_piece(move_from) == :white_king
-        @black_king = move_to if get_piece(move_from) == :black_king
+        @king[:white] = move_to if get_piece(move_from) == :white_king
+        @king[:black] = move_to if get_piece(move_from) == :black_king
     end
 
     def track_active_pieces(current_player, move_from, move_to)
@@ -173,34 +181,34 @@ class Board
         piece_moves
     end
 
-    def check_and_mate(cell)
-        if @cells[cell].colour == :white
-            piece_colour = :white
-            king_colour = :black
-            check_king = @black_king
-        else
-            piece_colour = :black
-            king_colour = :white
-            check_king = @white_king
-        end
-        attacking_moves = aggregate_attacking_colour_moves(piece_colour)
-        check = attacking_moves.uniq.include?(check_king)
-        if check
-            mate = true
-            @active_pieces[king_colour].each do |piece|
-                defensive_moves = calculate_moves(piece)
-                temp_from = @cells[piece]
-                defensive_moves.each do |move|
-                    temp_to = @cells[move]
-                    check_king = move if @cells[piece].class == King
-                    move_piece(piece, move)
-                    piece_moves = aggregate_attacking_colour_moves(piece_colour)
-                    mate = mate && piece_moves.uniq.include?(check_king)
-                    check_king = piece if @cells[move].class == King
-                    @cells[piece], @cells[move] = temp_from, temp_to
-                end
+    def check_check(moving_colour, opposing_colour)
+        attacking_moves = aggregate_attacking_colour_moves(moving_colour)
+        check = attacking_moves.uniq.include?(@king[opposing_colour])
+    end
+
+    def stalemate(moving_colour, opposing_colour)
+        mate = true
+        check_king = @king[opposing_colour]
+        @active_pieces[opposing_colour].each do |piece|
+            defensive_moves = calculate_moves(piece)
+            temp_from = @cells[piece]
+            defensive_moves.each do |move|
+                temp_to = @cells[move]
+                check_king = move if @cells[piece].class == King
+                move_piece(piece, move)
+                piece_moves = aggregate_attacking_colour_moves(moving_colour)
+                mate = mate && piece_moves.uniq.include?(check_king)
+                check_king = piece if @cells[move].class == King
+                @cells[piece], @cells[move] = temp_from, temp_to
             end
         end
+        mate
+    end
+
+    def check_and_mate(moving_colour, opposing_colour)
+        check = check_check(moving_colour, opposing_colour)
+        check_king = @king[opposing_colour]
+        mate = stalemate(moving_colour, opposing_colour) if check
         return "mate" if mate
         return "check" if check
         false
