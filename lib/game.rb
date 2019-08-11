@@ -15,7 +15,6 @@ class Game
         ai_game = game_io("computer") if new_game == "new"
         @player_white = Player.new(nil, :white)
         @player_black = Player.new(nil, :black)
-        p new_game
         if new_game == "new"
             if ai_game == "2"
                 @player_white.name = game_io("name", "Player 1 (white pieces) :")
@@ -84,7 +83,7 @@ class Game
             @board.show_board
             return result
         end
-        stale = @board.stalemate(moving_colour, opposing_colour)
+        stale = @board.stalemate(moving_colour, opposing_colour) || @board.stalemate(opposing_colour, moving_colour)
         if stale && result != "check"
             return "stale"
         end

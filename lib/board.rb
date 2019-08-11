@@ -9,7 +9,7 @@ require_relative "converter"
 class Board
     include Converter
 
-    attr_accessor :cells, :active_pieces, :white_king, :black_king, :king
+    attr_accessor :cells, :active_pieces, :king
     attr_reader :pieces
 
     def initialize
