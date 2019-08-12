@@ -12,8 +12,8 @@ class Game
 
     def initialize
         new_game = game_io("welcome")
-        load_game() if new_game == "load"
-        if new_game == "new"
+        loaded = load_game() if new_game == "load"
+        if new_game == "new" || !loaded
             ai_game = game_io("computer")
             @player_white = Player.new(game_io("name", "Player 1 (white pieces) :"), :white)
             @player_black = Player.new(game_io("name", "Player 2 (black pieces) :"), :black) if ai_game == "2"
@@ -147,9 +147,10 @@ class Game
             @current_player = save.current_player
             @available_moves = save.available_moves
             @board.show_board
+            return true
         rescue
-            puts "No game saved."
-            exit
+            puts "No game saved. Will start a new game instead."
+            return false
         end
     end
 
