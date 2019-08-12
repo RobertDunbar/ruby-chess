@@ -52,7 +52,7 @@ describe King do
             expect(@king.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[2,1], [2,2], [1,2], [2,0], [1,0], [0,0], [0,1], [0,2]])
         end
 
-        it "check we move into spaces taken by an opposing coloured piece" do
+        it "check we can move into spaces taken by an opposing coloured piece" do
             @cells[[0, 2]] = @opp_pawn
             @cells[[2, 2]] = @opp_pawn
             expect(@king.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[2,1], [2,2], [1,2], [2,0], [1,0], [0,0], [0,1], [0,2]])

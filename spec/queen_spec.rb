@@ -54,7 +54,7 @@ describe Queen do
                                                                                             [5,1], [6,1], [7,1], [0,1], [1,0]])
         end
 
-        it "check we move into spaces taken by an opposing coloured piece but not beyond" do
+        it "check we can move into spaces taken by an opposing coloured piece but not beyond" do
             @cells[[5, 5]] = @opp_pawn
             @cells[[1, 4]] = @opp_pawn
             expect(@queen.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[2,2], [3,3], [4,4], [5,5], [2,0], [0,2], [0,0],
@@ -62,7 +62,7 @@ describe Queen do
                                                                                             [5,1], [6,1], [7,1], [0,1], [1,0]])
         end
 
-        it "check we move into spaces taken by an opposing coloured piece but not beyond" do
+        it "check we cannot move into spaces taken by a same coloured piece and not beyond" do
             @cells[[5, 5]] = @white_pawn
             @cells[[1, 4]] = @white_pawn
             expect(@queen.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[2,2], [3,3], [4,4], [2,0], [0,2], [0,0],

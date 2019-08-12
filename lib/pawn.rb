@@ -37,6 +37,7 @@ class Pawn
                 positions << take_cell if cells[coord_move(cell, 1, -1)].colour == opposing_colour
             end
         end
+        p positions
         return positions
     end
 end

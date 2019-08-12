@@ -10,7 +10,7 @@ class Board
     include Converter
 
     attr_accessor :cells, :active_pieces, :king
-    attr_reader :pieces
+    attr_reader :pieces, :taken_white, :taken_black
 
     def initialize
         @taken_white = []

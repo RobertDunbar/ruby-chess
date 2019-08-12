@@ -52,13 +52,13 @@ describe Knight do
             expect(@knight.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[4,5], [5,4], [2,5], [1,4], [4,1], [5,2], [2,1], [1,2]])
         end
 
-        it "check we move into spaces taken by an opposing coloured piece but not beyond" do
+        it "check we can move into spaces taken by an opposing coloured piece but not beyond" do
             @cells[[2, 5]] = @opp_pawn
             @cells[[4, 1]] = @opp_pawn
             expect(@knight.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[4,5], [5,4], [2,5], [1,4], [4,1], [5,2], [2,1], [1,2]])
         end
 
-        it "check we move into spaces taken by an opposing coloured piece but not beyond" do
+        it "check we cannot move into spaces taken by an same coloured piece" do
             @cells[[2, 5]] = @white_pawn
             @cells[[4, 1]] = @white_pawn
             expect(@knight.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[4,5], [5,4], [1,4], [5,2], [2,1], [1,2]])

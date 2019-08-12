@@ -52,13 +52,13 @@ describe Bishop do
             expect(@bishop.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[2,2], [3,3], [4,4], [5,5], [6,6], [7,7], [2,0], [0,2], [0,0]])
         end
 
-        it "check we move into spaces taken by an opposing coloured piece but not beyond" do
+        it "check we can move into spaces taken by an opposing coloured piece but not beyond" do
             @cells[[5, 5]] = @opp_pawn
             @cells[[0, 0]] = @opp_pawn
             expect(@bishop.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[2,2], [3,3], [4,4], [5,5], [2,0], [0,2], [0,0]])
         end
 
-        it "check we move into spaces taken by an opposing coloured piece but not beyond" do
+        it "check we cannot move into spaces taken by a same coloured piece and not beyond" do
             @cells[[5, 5]] = @white_pawn
             @cells[[0, 0]] = @white_pawn
             expect(@bishop.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[2,2], [3,3], [4,4], [2,0], [0,2]])

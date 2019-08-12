@@ -52,13 +52,13 @@ describe Rook do
             expect(@rook.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[1,2], [1,3], [1,4], [1,5], [1,6], [1,7], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [0,1], [1,0]])
         end
 
-        it "check we move into spaces taken by an opposing coloured piece but not beyond" do
+        it "check we can move into spaces taken by an opposing coloured piece but not beyond" do
             @cells[[1, 5]] = @opp_pawn
             @cells[[4, 1]] = @opp_pawn
             expect(@rook.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to eq([[1,2], [1,3], [1,4], [1,5], [2,1], [3,1], [4,1], [0,1], [1,0]])
         end
 
-        it "check we move into spaces taken by an opposing coloured piece but not beyond" do
+        it "check we cannot move into spaces taken by a same coloured piece and not beyond" do
             @cells[[1, 5]] = @white_pawn
             @cells[[4, 1]] = @white_pawn
             expect(@rook.calc_moves(cell: @cell, cells: @cells, start_cell: @cell)).to  eq([[1,2], [1,3], [1,4], [2,1], [3,1], [0,1], [1,0]])
