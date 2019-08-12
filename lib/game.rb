@@ -12,23 +12,16 @@ class Game
 
     def initialize
         new_game = game_io("welcome")
-        ai_game = game_io("computer") if new_game == "new"
-        @player_white = Player.new(nil, :white)
-        @player_black = Player.new(nil, :black)
-        if new_game == "new"
-            if ai_game == "2"
-                @player_white.name = game_io("name", "Player 1 (white pieces) :")
-                @player_black.name = game_io("name", "Player 2 (black pieces) :")
-            else
-                @player_white.name = game_io("name", "Player 1 (white pieces) :")
-                @player_black.name = "Computer"
-                @player_black.computer = true
-            end
-        end
-        @board = Board.new()
-        @current_player = @player_white
-        @available_moves = []
         load_game() if new_game == "load"
+        if new_game == "new"
+            ai_game = game_io("computer")
+            @player_white = Player.new(game_io("name", "Player 1 (white pieces) :"), :white)
+            @player_black = Player.new(game_io("name", "Player 2 (black pieces) :"), :black) if ai_game == "2"
+            @player_black = Player.new("Computer", :black, true) if ai_game == "1"
+            @board = Board.new()
+            @current_player = @player_white
+            @available_moves = []
+        end
     end
 
     def play
