@@ -209,8 +209,8 @@ class Board
         check = check_check(moving_colour, opposing_colour)
         check_king = @king[opposing_colour]
         mate = stalemate(moving_colour, opposing_colour) if check
-        return "mate" if mate
-        return "check" if check
+        return :mate if mate
+        return :check if check
         false
     end
 end

@@ -20,6 +20,8 @@ RSpec.describe Converter do
     end
 end
 
+RSpec.describe
+
 # RSpec.describe Board do
 #     board = Board.new()
 
