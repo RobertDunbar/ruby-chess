@@ -157,4 +157,30 @@ describe Board do
     #         expect(@board.get_piece([4,0])).to eq(:white_king)
     #     end
     # end
+
+    before do
+        (0..7).each do |col|
+            (0..7).each do |row|
+                @board.cells[[col, row]] = " "
+            end
+        end
+        @cell = [1, 1]
+    end
+        # context "#check_check" do
+    #     it "check it returns the right key for white king"  do
+    #         expect(@board.get_piece([4,0])).to eq(:white_king)
+    #     end
+    # end
+
+        # context "#stalemate" do
+    #     it "check it returns the right key for white king"  do
+    #         expect(@board.get_piece([4,0])).to eq(:white_king)
+    #     end
+    # end
+
+        # context "#check_and_mate" do
+    #     it "check it returns the right key for white king"  do
+    #         expect(@board.get_piece([4,0])).to eq(:white_king)
+    #     end
+    # end
 end
