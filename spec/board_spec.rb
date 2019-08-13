@@ -152,35 +152,49 @@ describe Board do
         end
     end
 
-    # context "#move_piece" do
-    #     it "check it returns the right key for white king"  do
-    #         expect(@board.get_piece([4,0])).to eq(:white_king)
-    #     end
-    # end
-
     before do
-        (0..7).each do |col|
-            (0..7).each do |row|
-                @board.cells[[col, row]] = " "
-            end
-        end
-        @cell = [1, 1]
+        @board = Board.new()
+        @player_white = Player.new("john", :white)
+        #move black pawns and white queen to create check mate situation
+        @board.track_active_pieces(@player_black, [6,6], [6,4])
+        @board.move_piece([6,6], [6,4])
+        @board.track_active_pieces(@player_black, [5,6], [5,4])
+        @board.move_piece([5,6], [5,4])
+        @board.track_active_pieces(@player_white, [3,0], [7,4])
+        @board.move_piece([3,0], [7,4])
     end
-        # context "#check_check" do
-    #     it "check it returns the right key for white king"  do
-    #         expect(@board.get_piece([4,0])).to eq(:white_king)
-    #     end
-    # end
 
-        # context "#stalemate" do
-    #     it "check it returns the right key for white king"  do
-    #         expect(@board.get_piece([4,0])).to eq(:white_king)
-    #     end
-    # end
+    context "#check_and_mate" do
+        it "check it returns check mate condition for white"  do
+            expect(@board.check_and_mate(:white, :black)).to eq(:mate)
+        end
+    end
 
-        # context "#check_and_mate" do
-    #     it "check it returns the right key for white king"  do
-    #         expect(@board.get_piece([4,0])).to eq(:white_king)
-    #     end
-    # end
+    context "#check_check" do
+        it "check it returns the check only when its check"  do
+            #move pawn back to create check condition only
+            @board.track_active_pieces(@player_black, [6,4], [6,6])
+            @board.move_piece([6,4], [6,6])
+            expect(@board.check_and_mate(:white, :black)).to eq(:check)
+        end
+    end
+
+    context "#stalemate" do
+        it "check it returns the correct stalemate condition"  do
+            @board = Board.new()
+            (0..7).each do |col|
+                (0..7).each do |row|
+                    @board.cells[[col, row]] = " "
+                end
+            end
+            @board.cells[[5,7]] = @board.pieces[:black_king]
+            @board.cells[[5,6]] = @board.pieces[:white_pawn]
+            @board.cells[[5,5]] = @board.pieces[:white_king]
+            @board.active_pieces[:black] = [[5,7]]
+            @board.active_pieces[:white] = [[5,6], [5,5]]
+            @board.king[:white] = [5,5]
+            @board.king[:black] = [5,7]
+            expect(@board.stalemate(:white, :black)).to be true
+        end
+    end
 end
