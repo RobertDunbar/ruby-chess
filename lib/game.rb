@@ -10,6 +10,9 @@ class Game
 
     attr_reader :player_white, :player_black, :board, :current_player, :available_moves
 
+    #might be better to split input logic away from game.rb (perhaps into another class)
+    #testing become laborious otherwise as you ave to follow input protocol on each test
+
     def initialize
         new_game = game_io(:welcome)
         loaded = load_game() if new_game == "load"
