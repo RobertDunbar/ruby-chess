@@ -4,8 +4,6 @@ require "./lib/game.rb"
 describe Game do
     include Converter
 
-    #might be better to split input logic away from game.rb (perhaps into another class)
-    #testing become laborious otherwise as you ave to follow input protocol on each test
     before do
         @game = Game.new()
     end
